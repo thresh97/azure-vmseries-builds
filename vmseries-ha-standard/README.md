@@ -156,10 +156,14 @@ Create a file named pan\_ha\_role.json. Use the \<subscription\_id\> and \<resou
 ### **B. Create the Role and Service Principal**
 
 \# Create the custom role in the specific resource group scope  
-az role definition create \--role-definition pan\_ha\_role.json
+```
+az role definition create --role-definition pan_ha_role.json
+```
 
 \# Create the Service Principal scoped to the Resource Group  
-az ad sp create-for-rbac \-n \<sp-name\> \--scopes /subscriptions/\<subscription\_id\>/resourceGroups/\<resource\_group\_name\> \--role \<role\_name\>
+```
+az ad sp create-for-rbac -n <sp-name> --scopes /subscriptions/<subscription_id>/resourceGroups/<resource_group_name> --role <role_name>
+```
 
 *Save the appId (Client ID) and password (Client Secret) from the output for the PAN-OS configuration.*
 
