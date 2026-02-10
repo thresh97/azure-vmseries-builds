@@ -257,5 +257,4 @@ Configure the SNAT policy to ensure outbound traffic uses the **Floating VIP** f
 ### **Routing (Virtual Router: default)**
 
 * **Default Route (0.0.0.0/0):** Interface ethernet1/1, Next Hop IP Address (Azure Subnet Gateway: 10.0.2.1).  
-* **Trust Subnet Gateway:** For the ethernet1/2 interface, the Azure default gateway is 10.0.3.1. Ensure any internal routing or return paths to spoke VNETs account for this next hop.  
-* **RFC1918 Routes:** Ensure appropriate internal routes point to ethernet1/2 if communicating with spoke VNETs.
+* **RFC1918 (Private) Routes:** Interface ethernet1/2, Next Hop IP Address (Azure Subnet Gateway: 10.0.3.1).  
