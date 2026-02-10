@@ -236,7 +236,10 @@ After successfully committing to your SCM Folder, ensure the following network a
 
 Map the hardware interfaces to the logical zones and virtual routers.
 
-| **Interface** | **Type** | **IPv4 Address(es)** | **Zone** | **Forwarding** | | **ethernet1/1** | Layer3 | 10.0.2.100/24, 10.0.2.4/32, 10.0.2.5/32 | **internet** | lr:default | | **ethernet1/2** | Layer3 | 10.0.3.100/24, 10.0.3.4/32, 10.0.3.5/32 | **local** | lr:default |
+| Interface | Type | IPv4 Address(es) | Zone | Forwarding |
+| :---- | :---- | :---- | :---- | :---- |
+| ethernet1/1 | Layer3 | 10.0.2.100/24, 10.0.2.4/32, 10.0.2.5/32 | internet | lr:default |
+| ethernet1/2 | Layer3 | 10.0.3.100/24, 10.0.3.4/32, 10.0.3.5/32 | local | lr:default |
 
 ### **NAT Policy**
 
