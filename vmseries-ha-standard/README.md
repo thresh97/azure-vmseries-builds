@@ -189,11 +189,11 @@ set deviceconfig high-availability group state-synchronization transport udp
 set deviceconfig high-availability group election-option device-priority 100  
 set deviceconfig high-availability enabled yes  
 set deviceconfig setting advance-routing yes  
-set deviceconfig plugins vm\_series azure-ha-config client-id \<client\_id\>  
-set deviceconfig plugins vm\_series azure-ha-config client-secret \<client\_secret\>  
-set deviceconfig plugins vm\_series azure-ha-config tenant-id \<tenant\_id\>  
-set deviceconfig plugins vm\_series azure-ha-config subscription-id \<subscription\_id\>  
-set deviceconfig plugins vm\_series azure-ha-config resource-group \<resource\_group\_name\>  
+set deviceconfig plugins vm_series azure-ha-config client-id <client_id>  
+set deviceconfig plugins vm_series azure-ha-config client-secret <client_secret>  
+set deviceconfig plugins vm_series azure-ha-config tenant-id <tenant_id>  
+set deviceconfig plugins vm_series azure-ha-config subscription-id <subscription_id>  
+set deviceconfig plugins vm_series azure-ha-config resource-group <resource_group_name>  
 commit  
 exit
 ```
@@ -217,11 +217,11 @@ set deviceconfig high-availability group state-synchronization transport udp
 set deviceconfig high-availability group election-option device-priority 101  
 set deviceconfig high-availability enabled yes  
 set deviceconfig setting advance-routing yes  
-set deviceconfig plugins vm\_series azure-ha-config client-id \<client\_id\>  
-set deviceconfig plugins vm\_series azure-ha-config client-secret \<client\_secret\>  
-set deviceconfig plugins vm\_series azure-ha-config tenant-id \<tenant\_id\>  
-set deviceconfig plugins vm\_series azure-ha-config subscription-id \<subscription\_id\>  
-set deviceconfig plugins vm\_series azure-ha-config resource-group \<resource\_group\_name\>  
+set deviceconfig plugins vm_series azure-ha-config client-id <client_id>  
+set deviceconfig plugins vm_series azure-ha-config client-secret <client_secret>  
+set deviceconfig plugins vm_series azure-ha-config tenant-id <tenant_id>  
+set deviceconfig plugins vm_series azure-ha-config subscription-id <subscription_id>  
+set deviceconfig plugins vm_series azure-ha-config resource-group <resource_group_name>  
 commit  
 exit
 ```
