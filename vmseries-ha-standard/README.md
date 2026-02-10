@@ -130,26 +130,26 @@ Once Terraform has created the Resource Group (e.g., xyz-vmseries-ha-rg), create
 
 Create a file named pan\_ha\_role.json. Use the \<subscription\_id\> and \<resource\_group\_name\> from the Terraform outputs.
 ```
-{  
-  "Name": "\<role\_name\>",  
-  "IsCustom": true,  
-  "Description": "Allows VM-Series firewalls to manage Secondary IP Move, UDR, and Public IP associations for HA.",  
-  "Actions": \[  
-    "Microsoft.Authorization/\*/read",  
-    "Microsoft.Compute/virtualMachines/read",  
-    "Microsoft.Network/networkInterfaces/\*",  
-    "Microsoft.Network/networkSecurityGroups/\*",  
-    "Microsoft.Network/routeTables/\*",  
-    "Microsoft.Network/virtualNetworks/join/action",  
-    "Microsoft.Network/virtualNetworks/subnets/join/action",  
-    "Microsoft.Network/publicIPAddresses/join/action",  
-    "Microsoft.Network/publicIPAddresses/read",  
-    "Microsoft.Network/publicIPAddresses/write"  
-  \],  
-  "NotActions": \[\],  
-  "AssignableScopes": \[  
-    "/subscriptions/\<subscription\_id\>/resourceGroups/\<resource\_group\_name\>"  
-  \]  
+{
+  "Name": "<role_name>",
+  "IsCustom": true,
+  "Description": "Allows VM-Series firewalls to manage Secondary IP Move, UDR, and Public IP associations for HA.",
+  "Actions": [
+    "Microsoft.Authorization/*/read",
+    "Microsoft.Compute/virtualMachines/read",
+    "Microsoft.Network/networkInterfaces/*",
+    "Microsoft.Network/networkSecurityGroups/*",
+    "Microsoft.Network/routeTables/*",
+    "Microsoft.Network/virtualNetworks/join/action",
+    "Microsoft.Network/virtualNetworks/subnets/join/action",
+    "Microsoft.Network/publicIPAddresses/join/action",
+    "Microsoft.Network/publicIPAddresses/read",
+    "Microsoft.Network/publicIPAddresses/write"
+  ],
+  "NotActions": [],
+  "AssignableScopes": [
+    "/subscriptions/<subscription_id>/resourceGroups/<resource_group_name>"
+  ]
 }
 ```
 
