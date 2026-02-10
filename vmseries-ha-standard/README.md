@@ -22,27 +22,28 @@ This deployment defaults to the vmseries-flex offer and byol-gen2 SKU. To verify
 ### **1\. List Available Offers**
 
 Find the publisher's offers to ensure vmseries-flex is available.
-
-az vm image list-offers \--location eastus \--publisher paloaltonetworks \--output table
-
+```
+az vm image list-offers --location eastus --publisher paloaltonetworks --output table
+```
 ### **2\. List SKUs for the Offer**
 
 Determine the SKU (e.g., byol, bundle1, byol-gen2) for the Flex offer.
-
-az vm image list-skus \--location eastus \--publisher paloaltonetworks \--offer vmseries-flex \--output table
-
+```
+az vm image list-skus --location eastus --publisher paloaltonetworks --offer vmseries-flex --output table
+```
 ### **3\. List All Available Versions**
 
 List specific PAN-OS versions for a chosen SKU to find the exact version string (e.g., 12.1.4).
 
-az vm image list \\  
-  \--location eastus \\  
-  \--publisher paloaltonetworks \\  
-  \--offer vmseries-flex \\  
-  \--sku byol-gen2 \\  
-  \--all \\  
-  \--output table
-
+```
+az vm image list \  
+  --location eastus \  
+  --publisher paloaltonetworks \  
+  --offer vmseries-flex \  
+  --sku byol-gen2 \  
+  --all \  
+  --output table
+```
 *Note: Ensure the source\_image\_reference and plan blocks in the Terraform configuration match these values.*
 
 ## **Instance Selection & Performance**
