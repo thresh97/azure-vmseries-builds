@@ -33,7 +33,6 @@ firewalls = {
 authcodes=YOUR_AUTH_CODE_HERE
 panorama-server=cloud
 plugin-op-commands=advance-routing:enable,set-cores:2
-op-command-modes=jumbo-frame
 vm-series-auto-registration-pin-id=00000000-0000-0000-0000-000000000000
 vm-series-auto-registration-pin-value=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 dgname=azure_ha
@@ -50,7 +49,6 @@ EOT
 authcodes=YOUR_AUTH_CODE_HERE
 panorama-server=cloud
 plugin-op-commands=advance-routing:enable,set-cores:2
-op-command-modes=jumbo-frame
 vm-series-auto-registration-pin-id=00000000-0000-0000-0000-000000000000
 vm-series-auto-registration-pin-value=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 dgname=azure_ha
