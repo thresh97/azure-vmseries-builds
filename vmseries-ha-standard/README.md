@@ -63,13 +63,16 @@ Selecting the appropriate VM size is critical for both the stability of the HA c
 
 ## **Availability Zones vs. Availability Sets**
 
-This architecture prioritizes **Availability Zones (AZ)** over Availability Sets (AS) to provide the highest level of resilience and uptime guarantees available in the Azure ecosystem.
+This architecture prioritizes **Availability Zones (AZ)** over Availability Sets (AS) to provide the highest level of fault protection available in Azure:
 
-|
+| Feature | Availability Zones (Used Here) | Availability Sets |
+| :---- | :---- | :---- |
+| **Fault Protection** | Protects against **Data Center failures**. | Protects against **Hardware/Rack failures**. |
+| **Physical Separation** | Instances are in unique physical buildings with independent power/cooling. | Instances are in the same building, separated by Fault Domains (Racks). |
+| **Availability SLA** | **99.99%** for two or more VMs across zones. | **99.95%** for two or more VMs in a set. |
+| **Resource Scope** | Zonal resources (Standard SKU) are required. | Regional resources (Basic/Standard) are allowed. |
 
-| **Feature** | **Availability Zones (Used Here)** | **Availability Sets** | | **Fault Protection** | Protects against **Data Center failures**. | Protects against **Hardware/Rack failures**. | | **Physical Separation** | VMs are placed in unique physical facilities with independent power and cooling. | VMs are in the same building, separated by Fault Domains (server racks). | | **Availability SLA** | **99.99%** for two or more VMs across zones. | **99.95%** for two or more VMs in a set. | | **Connectivity** | Low-latency, high-bandwidth fiber links. | Internal data center networking. |
-
-**Technical Impact:** By utilizing Zones 1 and 2, the VM-Series HA pair remains operational even if an entire Azure data center facility experiences a catastrophic outage, whereas an Availability Set would only protect against localized hardware issues within a single facility.
+**Technical Impact:** By utilizing Zones 1 and 2, this deployment ensures that the VM-Series HA pair remains resilient even if an entire Azure data center facility experiences an outage.
 
 ## **Resource Inventory**
 
