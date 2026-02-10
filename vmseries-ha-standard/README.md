@@ -257,4 +257,12 @@ Configure the SNAT policy to ensure outbound traffic uses the **Floating VIP** f
 ### **Routing (Virtual Router: default)**
 
 * **Default Route (0.0.0.0/0):** Interface ethernet1/1, Next Hop IP Address (Azure Subnet Gateway: 10.0.2.1).  
-* **RFC1918 (Private) Routes:** Interface ethernet1/2, Next Hop IP Address (Azure Subnet Gateway: 10.0.3.1).  
+* **RFC1918 (Private) Routes:** Interface ethernet1/2, Next Hop IP Address (Azure Subnet Gateway: 10.0.3.1).
+
+## Disclaimer
+
+**FOR TEST AND DEMO USE ONLY.**
+
+This code is provided "as is" without warranty of any kind, either expressed or implied, including but not limited to the implied warranties of merchantability and fitness for a particular purpose. In no event shall the authors or copyright holders be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or the use or other dealings in the software.
+
+This is a reference architecture and should be thoroughly reviewed and modified to meet your organization's specific security and compliance requirements before use in a production environment.
