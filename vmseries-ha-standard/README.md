@@ -128,7 +128,7 @@ Once Terraform has created the Resource Group (e.g., xyz-vmseries-ha-rg), create
 ### **A. Create the Role Definition File**
 
 Create a file named pan\_ha\_role.json. Use the \<subscription\_id\> and \<resource\_group\_name\> from the Terraform outputs.
-
+```
 {  
   "Name": "\<role\_name\>",  
   "IsCustom": true,  
@@ -150,6 +150,7 @@ Create a file named pan\_ha\_role.json. Use the \<subscription\_id\> and \<resou
     "/subscriptions/\<subscription\_id\>/resourceGroups/\<resource\_group\_name\>"  
   \]  
 }
+```
 
 ### **B. Create the Role and Service Principal**
 
@@ -166,7 +167,7 @@ az ad sp create-for-rbac \-n \<sp-name\> \--scopes /subscriptions/\<subscription
 Run these commands via the CLI on each firewall. HA2 uses Ethernet 1/3.
 
 ### **Firewall 1 (Primary)**
-
+```
 configure  
 set network interface ethernet ethernet1/3 ha  
 set deviceconfig system hostname azure-ha-fw1  
@@ -190,9 +191,11 @@ set deviceconfig plugins vm\_series azure-ha-config subscription-id \<subscripti
 set deviceconfig plugins vm\_series azure-ha-config resource-group \<resource\_group\_name\>  
 commit  
 exit
+```
 
 ### **Firewall 2 (Secondary)**
 
+```
 configure  
 set network interface ethernet ethernet1/3 ha  
 set deviceconfig system hostname azure-ha-fw2  
@@ -216,6 +219,7 @@ set deviceconfig plugins vm\_series azure-ha-config subscription-id \<subscripti
 set deviceconfig plugins vm\_series azure-ha-config resource-group \<resource\_group\_name\>  
 commit  
 exit
+```
 
 ## **4\. SCM Folder Configuration**
 
