@@ -50,17 +50,32 @@ locals {
     ha2      = azurerm_subnet.ha2.address_prefixes[0]
     workload = azurerm_subnet.workload.address_prefixes[0]
   }
+
+  # Normalize Resource Group Name and Location
+  # If existing_resource_group_name is provided, use it and its location.
+  # Otherwise, use the created resource and the provided variable location.
+  resource_group_name     = var.existing_resource_group_name != null ? data.azurerm_resource_group.this[0].name : azurerm_resource_group.this[0].name
+  resource_group_location = var.existing_resource_group_name != null ? data.azurerm_resource_group.this[0].location : azurerm_resource_group.this[0].location
 }
 
+# Create a new RG only if existing_resource_group_name is NOT provided
 resource "azurerm_resource_group" "this" {
+  count    = var.existing_resource_group_name == null ? 1 : 0
   name     = "${local.full_prefix}-rg"
   location = var.location
+}
+
+# Fetch existing RG only if existing_resource_group_name IS provided
+data "azurerm_resource_group" "this" {
+  count = var.existing_resource_group_name != null ? 1 : 0
+  name  = var.existing_resource_group_name
 }
 
 # --------------------------------------------------------------------------
 # 2. MARKETPLACE AGREEMENT
 # --------------------------------------------------------------------------
 resource "azurerm_marketplace_agreement" "paloalto" {
+  count     = var.create_marketplace_agreement ? 1 : 0
   publisher = "paloaltonetworks"
   offer     = "vmseries-flex"
   plan      = "byol-gen2"
@@ -72,41 +87,41 @@ resource "azurerm_marketplace_agreement" "paloalto" {
 resource "azurerm_virtual_network" "hub" {
   name                = "${local.full_prefix}-vnet"
   address_space       = [var.vnet_cidr]
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
+  location            = local.resource_group_location
+  resource_group_name = local.resource_group_name
 }
 
 resource "azurerm_subnet" "mgmt" {
   name                 = "mgmt"
-  resource_group_name  = azurerm_resource_group.this.name
+  resource_group_name  = local.resource_group_name
   virtual_network_name = azurerm_virtual_network.hub.name
   address_prefixes     = [cidrsubnet(var.vnet_cidr, var.default_subnet_mask - local.vnet_mask, 1)]
 }
 
 resource "azurerm_subnet" "untrust" {
   name                 = "untrust"
-  resource_group_name  = azurerm_resource_group.this.name
+  resource_group_name  = local.resource_group_name
   virtual_network_name = azurerm_virtual_network.hub.name
   address_prefixes     = [cidrsubnet(var.vnet_cidr, var.default_subnet_mask - local.vnet_mask, 2)]
 }
 
 resource "azurerm_subnet" "trust" {
   name                 = "trust"
-  resource_group_name  = azurerm_resource_group.this.name
+  resource_group_name  = local.resource_group_name
   virtual_network_name = azurerm_virtual_network.hub.name
   address_prefixes     = [cidrsubnet(var.vnet_cidr, var.default_subnet_mask - local.vnet_mask, 3)]
 }
 
 resource "azurerm_subnet" "ha2" {
   name                 = "ha2"
-  resource_group_name  = azurerm_resource_group.this.name
+  resource_group_name  = local.resource_group_name
   virtual_network_name = azurerm_virtual_network.hub.name
   address_prefixes     = [cidrsubnet(var.vnet_cidr, var.default_subnet_mask - local.vnet_mask, 4)]
 }
 
 resource "azurerm_subnet" "workload" {
   name                 = "workload"
-  resource_group_name  = azurerm_resource_group.this.name
+  resource_group_name  = local.resource_group_name
   virtual_network_name = azurerm_virtual_network.hub.name
   address_prefixes     = [cidrsubnet(var.vnet_cidr, var.default_subnet_mask - local.vnet_mask, 5)]
 }
@@ -116,8 +131,8 @@ resource "azurerm_subnet" "workload" {
 # --------------------------------------------------------------------------
 resource "azurerm_network_security_group" "mgmt" {
   name                = "${local.full_prefix}-mgmt-nsg"
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
+  location            = local.resource_group_location
+  resource_group_name = local.resource_group_name
 
   security_rule {
     name                       = "AllowMgmtInbound"
@@ -139,8 +154,8 @@ resource "azurerm_subnet_network_security_group_association" "mgmt" {
 
 resource "azurerm_network_security_group" "untrust" {
   name                = "${local.full_prefix}-untrust-nsg"
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
+  location            = local.resource_group_location
+  resource_group_name = local.resource_group_name
 
   security_rule {
     name                       = "AllowOutboundInternet"
@@ -162,8 +177,8 @@ resource "azurerm_subnet_network_security_group_association" "untrust" {
 
 resource "azurerm_network_security_group" "workload" {
   name                = "${local.full_prefix}-workload-nsg"
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
+  location            = local.resource_group_location
+  resource_group_name = local.resource_group_name
 
   security_rule {
     name                       = "AllowPing"
@@ -173,6 +188,8 @@ resource "azurerm_network_security_group" "workload" {
     protocol                   = "Icmp"
     source_address_prefixes    = var.allowed_mgmt_cidrs
     destination_address_prefix = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
   }
 
   security_rule {
@@ -184,6 +201,7 @@ resource "azurerm_network_security_group" "workload" {
     destination_port_range     = "22"
     source_address_prefixes    = var.allowed_mgmt_cidrs
     destination_address_prefix = "*"
+    source_port_range          = "*"
   }
 
   security_rule {
@@ -195,6 +213,7 @@ resource "azurerm_network_security_group" "workload" {
     destination_port_range     = "80"
     source_address_prefixes    = var.allowed_mgmt_cidrs
     destination_address_prefix = "*"
+    source_port_range          = "*"
   }
 }
 
@@ -205,8 +224,8 @@ resource "azurerm_subnet_network_security_group_association" "workload" {
 
 resource "azurerm_route_table" "workload" {
   name                = "${local.full_prefix}-workload-rt"
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
+  location            = local.resource_group_location
+  resource_group_name = local.resource_group_name
 
   route {
     name                   = "DefaultRouteToFW"
@@ -241,16 +260,16 @@ resource "azurerm_public_ip" "pip" {
     }
   }
   name                = "${local.full_prefix}-${each.key}-pip"
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
+  location            = local.resource_group_location
+  resource_group_name = local.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
 }
 
 resource "azurerm_public_ip" "untrust_floating_pip" {
   name                = "${local.full_prefix}-untrust-floating-pip"
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
+  location            = local.resource_group_location
+  resource_group_name = local.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
 }
@@ -264,8 +283,8 @@ resource "azurerm_network_interface" "nics" {
   }
 
   name                           = "${local.full_prefix}-${each.key}-nic"
-  location                       = azurerm_resource_group.this.location
-  resource_group_name            = azurerm_resource_group.this.name
+  location                       = local.resource_group_location
+  resource_group_name            = local.resource_group_name
   accelerated_networking_enabled = each.value.nic_type == "mgmt" ? false : true
   ip_forwarding_enabled          = each.value.nic_type == "trust" ? true : false
 
@@ -299,8 +318,8 @@ resource "azurerm_linux_virtual_machine" "vmseries" {
   for_each = var.firewalls
 
   name                = "${local.full_prefix}-${each.key}"
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = local.resource_group_name
+  location            = local.resource_group_location
   size                = var.vm_size
   zone                = tostring(index(keys(var.firewalls), each.key) + 1)
   admin_username      = "panadmin"
@@ -344,16 +363,16 @@ resource "azurerm_linux_virtual_machine" "vmseries" {
 # --------------------------------------------------------------------------
 resource "azurerm_public_ip" "workload_pip" {
   name                = "${local.full_prefix}-workload-pip"
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
+  location            = local.resource_group_location
+  resource_group_name = local.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
 }
 
 resource "azurerm_network_interface" "workload_nic" {
   name                = "${local.full_prefix}-workload-nic"
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
+  location            = local.resource_group_location
+  resource_group_name = local.resource_group_name
 
   ip_configuration {
     name                          = "ipconfig1"
@@ -366,8 +385,8 @@ resource "azurerm_network_interface" "workload_nic" {
 
 resource "azurerm_linux_virtual_machine" "workload" {
   name                = "${local.full_prefix}-workload"
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = local.resource_group_name
+  location            = local.resource_group_location
   size                = var.workload_vm_size
   admin_username      = "azureuser"
   network_interface_ids = [
@@ -405,18 +424,72 @@ resource "azurerm_linux_virtual_machine" "workload" {
 # --------------------------------------------------------------------------
 # 7. VARIABLES
 # --------------------------------------------------------------------------
-variable "subscription_id" { type = string }
-variable "deployment_code" { type = string; default = null }
-variable "vm_size" { type = string; default = "Standard_D8s_v5" }
-variable "workload_vm_size" { type = string; default = "Standard_B2s" }
-variable "prefix" { type = string; default = "vmseries-ha" }
-variable "location" { type = string }
-variable "vnet_cidr" { type = string }
-variable "default_subnet_mask" { type = number; default = 24 }
-variable "trust_floating_ip" { type = string }
-variable "untrust_floating_ip" { type = string }
-variable "ssh_key" { type = string }
-variable "allowed_mgmt_cidrs" { type = list(string) }
+
+variable "subscription_id" {
+  type = string
+}
+
+variable "deployment_code" {
+  type    = string
+  default = null
+}
+
+variable "existing_resource_group_name" {
+  description = "Name of an existing Resource Group to use. If null, a new one will be created."
+  type        = string
+  default     = null
+}
+
+variable "create_marketplace_agreement" {
+  description = "Accept the Azure Marketplace agreement. Set to false if the subscription has already accepted the terms."
+  type        = bool
+  default     = false
+}
+
+variable "vm_size" {
+  type    = string
+  default = "Standard_D8s_v5"
+}
+
+variable "workload_vm_size" {
+  type    = string
+  default = "Standard_B2s"
+}
+
+variable "prefix" {
+  type    = string
+  default = "vmseries-ha"
+}
+
+variable "location" {
+  type = string
+}
+
+variable "vnet_cidr" {
+  type = string
+}
+
+variable "default_subnet_mask" {
+  type    = number
+  default = 24
+}
+
+variable "trust_floating_ip" {
+  type = string
+}
+
+variable "untrust_floating_ip" {
+  type = string
+}
+
+variable "ssh_key" {
+  type = string
+}
+
+variable "allowed_mgmt_cidrs" {
+  type = list(string)
+}
+
 variable "firewalls" {
   type = map(object({
     hostname  = string
@@ -431,7 +504,7 @@ output "environment_info" {
   value = {
     tenant_id       = data.azurerm_client_config.current.tenant_id
     subscription_id = var.subscription_id
-    resource_group  = azurerm_resource_group.this.name
+    resource_group  = local.resource_group_name
   }
 }
 
